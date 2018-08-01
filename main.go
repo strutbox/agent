@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	Version      string
-	BuildVersion string
+	Version       string
+	BuildVersion  string
+	BootstrapHost string
 )
 
 var versionFlag = flag.Bool("v", false, "prints current version")

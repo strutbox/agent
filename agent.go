@@ -41,7 +41,7 @@ func agentMain() {
 		loadCertificate()
 	})
 
-	bootstrap("http://127.0.0.1:8000")
+	bootstrap()
 	time.Sleep(1 * time.Second)
 }
 
@@ -87,7 +87,7 @@ func loadCertificate() {
 	privateKey = key
 }
 
-func bootstrap(urlPrefix string) {
+func bootstrap() {
 	publicKeyDer, err := x509.MarshalPKIXPublicKey(&privateKey.PublicKey)
 	if err != nil {
 		panic(err)
@@ -100,7 +100,7 @@ func bootstrap(urlPrefix string) {
 
 	decoder := &MessageDecoder{privateKey}
 
-	req, err := http.NewRequest("POST", urlPrefix+"/api/0/agent/bootstrap/", bytes.NewReader(pubKey))
+	req, err := http.NewRequest("POST", BootstrapHost+"/api/0/agent/bootstrap/", bytes.NewReader(pubKey))
 	if err != nil {
 		panic(err)
 	}
