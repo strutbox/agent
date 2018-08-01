@@ -10,6 +10,7 @@ class App extends Component {
   constructor() {
     super();
     this.UUID = '6efa9836-b179-4387-b21a-1b7dffacfae0';
+    // this.UUID = '6efa9836-b179-4387-b21a-1b7dffacfae1';
     this.state = {
       connected: false,
     };
@@ -25,7 +26,7 @@ class App extends Component {
   render() {
     const { connected, service } = this.state;
     if (!connected)
-      return h(Connect, {
+      return h(Discover, {
         onConnect: this.onConnect.bind(this),
         serviceUUID: this.UUID,
       });
@@ -34,7 +35,7 @@ class App extends Component {
   }
 }
 
-class Connect extends Component {
+class Discover extends Component {
   onConnect(e) {
     this.setState({connecting: true});
 
@@ -43,9 +44,22 @@ class Connect extends Component {
     navigator.bluetooth.requestDevice({
       filters: [{services: [serviceUUID]}]
     })
-    .then(device => device.gatt.connect())
-    .then(server => {
-      server.getPrimaryService(serviceUUID).then(onConnect);
+    .then(device => {
+      device.gatt.connect()
+      .then(server => {
+        server.getPrimaryService(serviceUUID).then(onConnect);
+      })
+      .catch(e => {
+        alert(e);
+        this.setState({
+          connecting: false,
+        });
+      })
+    })
+    .catch(e => {
+      this.setState({
+        connecting: false,
+      });
     });
 
   }
@@ -55,7 +69,7 @@ class Connect extends Component {
       return h('div', {}, 'connecting...');
 
     return (
-      h('button', {onClick: this.onConnect.bind(this)}, 'Connect')
+      h('button', {onClick: this.onConnect.bind(this)}, 'Discover')
     )
   }
 }

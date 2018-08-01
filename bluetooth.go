@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/currantlabs/ble"
-	"github.com/currantlabs/ble/examples/lib/dev"
+	"github.com/go-ble/ble"
+	"github.com/go-ble/ble/examples/lib/dev"
 )
 
 const DEVICE_NAME = "STRUT"
@@ -33,12 +33,16 @@ network={
 const wpaLocation = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
 func runBluetoothService() {
+	log.Println("bluetooth: starting")
 	for {
-		d, err := dev.NewDevice(DEVICE_NAME)
+		log.Println("bluetooth: NewDevice", DEVICE_NAME)
+		d, err := dev.NewDevice("default")
 		if err != nil {
-			time.Sleep(100 * time.Millisecond)
+			log.Println(err)
+			time.Sleep(250 * time.Millisecond)
 			continue
 		}
+		log.Println("bluetooth: got device")
 		ble.SetDefaultDevice(d)
 
 		svc := ble.NewService(ServiceUUID)
@@ -47,17 +51,23 @@ func runBluetoothService() {
 
 		ble.AddService(svc)
 
-		log.Println("Advertising BLE...")
+		log.Println("bluetooth: advertising...")
 		// ble.WithSigHandler(context.WithTimeout(context.Background(), *du))
 		ble.AdvertiseNameAndServices(context.Background(), DEVICE_NAME, svc.UUID)
+		// ble.AdvertiseNameAndServices(context.Background(), DEVICE_NAME)
 	}
 }
 
 func NewSSIDCharacteristic() *ble.Characteristic {
 	c := ble.NewCharacteristic(ble.MustParse("6efa9836-b179-4387-b21a-1b7dffacfae1"))
 	c.HandleNotify(ble.NotifyHandlerFunc(func(r ble.Request, n ble.Notifier) {
+		log.Println("bluetooth: fetching SSIDs")
 		cmd := exec.Command("iwlist", "wlan0", "scan")
-		out, _ := cmd.Output()
+		out, err := cmd.Output()
+		if err != nil {
+			log.Println(err)
+			return
+		}
 		scanner := bufio.NewScanner(bytes.NewReader(out))
 
 		var ssid map[string]interface{}
@@ -105,11 +115,20 @@ func NewSSIDCharacteristic() *ble.Characteristic {
 func NewIPAddressCharacteristic() *ble.Characteristic {
 	c := ble.NewCharacteristic(ble.MustParse("6efa9836-b179-4387-b21a-1b7dffacfae2"))
 	c.HandleRead(ble.ReadHandlerFunc(func(r ble.Request, w ble.ResponseWriter) {
+		log.Println("bluetooth: reading IP")
 		response := map[string]interface{}{
 			"ip": nil,
 		}
-		iface, _ := net.InterfaceByName("wlan0")
-		addrs, _ := iface.Addrs()
+		iface, err := net.InterfaceByName("wlan0")
+		if err != nil {
+			log.Println("bluetooth:", err)
+			return
+		}
+		addrs, err := iface.Addrs()
+		if err != nil {
+			log.Println("bluetooth:", err)
+			return
+		}
 		for _, addr := range addrs {
 			switch ip := addr.(type) {
 			case *net.IPNet:

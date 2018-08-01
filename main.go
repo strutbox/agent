@@ -20,7 +20,7 @@ type Program func() int
 func init() { flag.Parse() }
 
 func printVersion() int {
-	fmt.Printf("version=%s build=%s runtime=%s/%s\n", Version, BuildVersion, runtime.GOOS, runtime.GOARCH)
+	fmt.Printf("serial=%s version=%s build=%s runtime=%s/%s\n", SerialNumber(), Version, BuildVersion, runtime.GOOS, runtime.GOARCH)
 	return 0
 }
 
@@ -40,9 +40,7 @@ func main2() int {
 	go checkForUpdates(Version, BuildVersion)
 	go runHttpService()
 	go runBluetoothService()
-
-	select {}
-
+	runAgent()
 	return 0
 }
 

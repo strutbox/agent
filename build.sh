@@ -15,4 +15,4 @@ case "$1" in
 esac
 
 rm -f strut
-exec go build -ldflags "-X main.BuildVersion=$(date +%s) -X main.Version=0.0.1" -o strut -v ./...
+exec go build -ldflags "-X main.BuildVersion=$(date +%s) -X main.Version=0.0.1" -o strut -v .

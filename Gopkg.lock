@@ -3,9 +3,33 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/currantlabs/ble"
-  packages = [".","darwin","examples/lib/dev","linux","linux/adv","linux/att","linux/gatt","linux/hci","linux/hci/cmd","linux/hci/evt","linux/hci/socket"]
-  revision = "c1d21c164cf83d3360fd5abd73a3405cb588c06c"
+  name = "github.com/go-ble/ble"
+  packages = [
+    ".",
+    "darwin",
+    "examples/lib/dev",
+    "linux",
+    "linux/adv",
+    "linux/att",
+    "linux/gatt",
+    "linux/hci",
+    "linux/hci/cmd",
+    "linux/hci/evt",
+    "linux/hci/socket"
+  ]
+  revision = "11b1dad1df3d73d0ff11b08fb156c617b7687f29"
+
+[[projects]]
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
+
+[[projects]]
+  name = "github.com/gorilla/websocket"
+  packages = ["."]
+  revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
+  version = "v1.2.0"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -41,23 +65,48 @@
   branch = "master"
   name = "github.com/raff/goble"
   packages = ["xpc"]
-  revision = "fadc3db9f77abd3b8036a54d4373c7a71030ddac"
+  revision = "efeac611681b89806d673dfbd8fc1690ca6bd093"
+
+[[projects]]
+  name = "github.com/vmihailenco/msgpack"
+  packages = [
+    ".",
+    "codes"
+  ]
+  revision = "b5e691b1eb52a28c05e67ab9df303626c095c23b"
+  version = "v3.3.3"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context"]
-  revision = "5ccada7d0a7ba9aeb5d3aca8d3501b4c2a509fec"
+  revision = "3673e40ba22529d22c3fd7c93e97b0ce50fa7bdd"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "810d7000345868fc619eb81f46307107118f4ae1"
+  revision = "e072cadbbdc8dd3d3ffa82b8b4b9304c261d9311"
+
+[[projects]]
+  name = "google.golang.org/appengine"
+  packages = [
+    ".",
+    "datastore",
+    "internal",
+    "internal/app_identity",
+    "internal/base",
+    "internal/datastore",
+    "internal/log",
+    "internal/modules",
+    "internal/remote_api"
+  ]
+  revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
+  version = "v1.1.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e2de309059fe7443a401857e037f9f91a4a992a06d08dad962cab480761d1e55"
+  inputs-digest = "ba0b44304c1acde8a1e7928331bfec7b4d0b3a7f735145fe97161062c1009e23"
   solver-name = "gps-cdcl"
   solver-version = 1

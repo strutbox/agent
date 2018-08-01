@@ -8,13 +8,17 @@ import (
 )
 
 func runHttpService() {
+	log.Println("http: starting")
 	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "version=%s build=%s\n", Version, BuildVersion)
+		fmt.Fprintf(w, "serial=%s version=%s build=%s\n", SerialNumber(), Version, BuildVersion)
 	})
 
 	for {
+		log.Println("http: listening on :6969...")
 		err := http.ListenAndServe(":6969", nil)
-		log.Println(err)
-		time.Sleep(1 * time.Second)
+		if err != nil {
+			log.Println(err)
+			time.Sleep(100 * time.Millisecond)
+		}
 	}
 }
