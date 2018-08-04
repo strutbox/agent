@@ -1,17 +1,8 @@
 package main
 
 import (
-	"crypto/sha256"
-	"errors"
-	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
-	"net/http"
-	"os"
 	"os/exec"
-	"path/filepath"
-	"runtime"
 
 	"github.com/gorilla/websocket"
 )
@@ -42,7 +33,7 @@ func handleMessage(message Message) {
 	case "play":
 		url := message["data"].(string)
 		log.Println("websocket: play:", url)
-		path, err := fetch(url)
+		path, err := cacheManager.get(url)
 		if err != nil {
 			log.Println("fetch:", err)
 			return
@@ -51,7 +42,7 @@ func handleMessage(message Message) {
 	case "load":
 		url := message["data"].(string)
 		log.Println("websocket: load:", url)
-		_, err := fetch(url)
+		_, err := cacheManager.get(url)
 		if err != nil {
 			log.Println("fetch:", err)
 			return
@@ -61,61 +52,9 @@ func handleMessage(message Message) {
 	}
 }
 
-func sha256String(s string) string {
-	h := sha256.New()
-	h.Write([]byte(s))
-	return fmt.Sprintf("%x", h.Sum(nil))
-}
-
-func fetch(url string) (string, error) {
-	cachePath := filepath.Join("./cache", sha256String(url))
-	_, err := os.Stat(cachePath)
-	if err == nil {
-		return cachePath, nil
-	}
-	if !os.IsNotExist(err) {
-		return "", err
-	}
-	log.Println("fetch:", url)
-	tmpfile, err := ioutil.TempFile("./cache", "")
-	if err != nil {
-		return "", err
-	}
-	defer os.Remove(tmpfile.Name())
-
-	resp, err := http.Get(url)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		return "", errors.New(fmt.Sprintf("http: %d", resp.StatusCode))
-	}
-
-	_, err = io.Copy(tmpfile, resp.Body)
-	if err != nil {
-		return "", nil
-	}
-
-	if err = os.Rename(tmpfile.Name(), cachePath); err != nil {
-		return "", nil
-	}
-
-	return cachePath, nil
-}
-
 func play(path string) {
 	log.Println("play:", path)
-
-	var player string
-	switch runtime.GOOS {
-	case "darwin":
-		player = "/usr/bin/afplay"
-	case "linux":
-		player = "/usr/bin/omxplayer"
-	default:
-		panic("Unknown GOOS")
+	if err := exec.Command(playerBin, path).Run(); err != nil {
+		log.Println("play:", err)
 	}
-
-	exec.Command(player, path).Run()
 }

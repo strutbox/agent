@@ -124,5 +124,6 @@ func bootstrap() {
 		panic(err)
 	}
 
+	initCacheManager(out["download_url"].(string))
 	runWebsocket(out["websocket"].(string), decoder)
 }
