@@ -9,3 +9,7 @@
 [[constraint]]
   name = "github.com/vmihailenco/msgpack"
   version = "3.3.3"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/fernet/fernet-go"

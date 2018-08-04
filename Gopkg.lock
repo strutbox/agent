@@ -3,10 +3,17 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/fernet/fernet-go"
+  packages = ["."]
+  revision = "1b2437bc582b3cfbb341ee5a29f8ef5b42912ff2"
+
+[[projects]]
+  branch = "master"
   name = "github.com/go-ble/ble"
   packages = [
     ".",
     "darwin",
+    "examples/lib",
     "examples/lib/dev",
     "linux",
     "linux/adv",
@@ -107,6 +114,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ba0b44304c1acde8a1e7928331bfec7b4d0b3a7f735145fe97161062c1009e23"
+  inputs-digest = "3d2ed3ebaae3bdae7523830498d1a4e6261cf3a88c6fa94bfe003306967d2a8e"
   solver-name = "gps-cdcl"
   solver-version = 1
