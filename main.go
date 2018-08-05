@@ -38,9 +38,10 @@ func main() {
 }
 
 func main2() int {
+	setupBluetoothService()
+	go runBluetoothService()
 	go checkForUpdates(Version, BuildVersion)
 	go runHttpService()
-	go runBluetoothService()
 	runAgent()
 	return 0
 }

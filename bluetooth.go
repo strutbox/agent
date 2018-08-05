@@ -11,7 +11,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"time"
 
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/examples/lib/dev"
@@ -21,8 +20,7 @@ const DEVICE_NAME = "STRUT"
 
 var ServiceUUID = ble.MustParse("6efa9836-b179-4387-b21a-1b7dffacfae0")
 
-const wpaTemplate = `country=US
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+const wpaTemplate = `ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 
 network={
@@ -32,30 +30,31 @@ network={
 `
 const wpaLocation = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
-func runBluetoothService() {
+var bleService *ble.Service
+
+func setupBluetoothService() {
 	log.Println("bluetooth: starting")
-	for {
-		log.Println("bluetooth: NewDevice", DEVICE_NAME)
-		d, err := dev.NewDevice("default")
-		if err != nil {
-			log.Println(err)
-			time.Sleep(250 * time.Millisecond)
-			continue
-		}
-		log.Println("bluetooth: got device")
-		ble.SetDefaultDevice(d)
-
-		svc := ble.NewService(ServiceUUID)
-		svc.AddCharacteristic(NewSSIDCharacteristic())
-		svc.AddCharacteristic(NewIPAddressCharacteristic())
-
-		ble.AddService(svc)
-
-		log.Println("bluetooth: advertising...")
-		// ble.WithSigHandler(context.WithTimeout(context.Background(), *du))
-		ble.AdvertiseNameAndServices(context.Background(), DEVICE_NAME, svc.UUID)
-		// ble.AdvertiseNameAndServices(context.Background(), DEVICE_NAME)
+	d, err := dev.NewDevice("default")
+	if err != nil {
+		log.Println("bluetooth:", err)
+		panic(err)
 	}
+	log.Println("bluetooth: got device")
+	ble.SetDefaultDevice(d)
+
+	bleService = ble.NewService(ServiceUUID)
+	bleService.AddCharacteristic(NewSSIDCharacteristic())
+	bleService.AddCharacteristic(NewIPAddressCharacteristic())
+
+	if err := ble.AddService(bleService); err != nil {
+		log.Println("bluetooth:", err)
+		panic(err)
+	}
+}
+
+func runBluetoothService() {
+	log.Println("bluetooth: advertising...")
+	ble.AdvertiseNameAndServices(context.Background(), DEVICE_NAME, bleService.UUID)
 }
 
 func NewSSIDCharacteristic() *ble.Characteristic {
@@ -106,8 +105,9 @@ func NewSSIDCharacteristic() *ble.Characteristic {
 		fp.Close()
 		os.Rename(wpaLocation+".tmp", wpaLocation)
 
-		exec.Command("ifconfig", "wlan0", "down").Run()
-		exec.Command("ifconfig", "wlan0", "up").Run()
+		if err := exec.Command("wpa_cli", "-i", "wlan0", "reconfigure").Run(); err != nil {
+			log.Println("bluetooth:", err)
+		}
 	}))
 	return c
 }
