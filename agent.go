@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 )
@@ -46,13 +47,13 @@ func agentMain() {
 }
 
 func ensureCertificateExist() {
-	if _, err := os.Stat("private.key"); err == nil {
+	if _, err := os.Stat(filepath.Join(WorkingDir, "private.key")); err == nil {
 		return
 	}
 
 	log.Println("agent: generating new private.key")
 
-	file, err := os.Create("private.key")
+	file, err := os.Create(filepath.Join(WorkingDir, "private.key"))
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +67,7 @@ func ensureCertificateExist() {
 }
 
 func loadCertificate() {
-	file, err := os.Open("private.key")
+	file, err := os.Open(filepath.Join(WorkingDir, "private.key"))
 	if err != nil {
 		panic(err)
 	}

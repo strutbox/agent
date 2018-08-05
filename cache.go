@@ -13,8 +13,6 @@ import (
 	"sync"
 )
 
-const cacheDir = "./cache"
-
 type CacheManager struct {
 	dir         string
 	downloadUrl string
@@ -45,7 +43,7 @@ func (c *CacheManager) get(url string) (string, error) {
 }
 
 func (c *CacheManager) download(url string) (string, error) {
-	cachePath := filepath.Join(cacheDir, url)
+	cachePath := filepath.Join(c.dir, url)
 	_, err := os.Stat(cachePath)
 	if err == nil {
 		return cachePath, nil
@@ -54,7 +52,7 @@ func (c *CacheManager) download(url string) (string, error) {
 		return "", err
 	}
 	log.Println("cache: downloading", url)
-	tmpfile, err := ioutil.TempFile(cacheDir, "")
+	tmpfile, err := ioutil.TempFile(c.dir, "")
 	if err != nil {
 		return "", err
 	}
@@ -129,8 +127,9 @@ func (c *CacheManager) clean() {
 
 func initCacheManager(downloadUrl string) {
 	cacheManager = &CacheManager{
-		dir:         cacheDir,
+		dir:         filepath.Join(WorkingDir, "cache"),
 		downloadUrl: downloadUrl,
 		maxSize:     1024 * 1024 * 500, // 500MB cache size
 	}
+	os.Mkdir(cacheManager.dir, os.FileMode(0755))
 }

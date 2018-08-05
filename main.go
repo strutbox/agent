@@ -12,6 +12,7 @@ var (
 	Version       string
 	BuildVersion  string
 	BootstrapHost string
+	WorkingDir    string
 )
 
 var versionFlag = flag.Bool("v", false, "prints current version")

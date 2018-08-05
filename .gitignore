@@ -1,3 +1,4 @@
 vendor/
 cache/
 strut
+private.key
