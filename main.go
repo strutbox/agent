@@ -41,6 +41,7 @@ func main() {
 func main2() int {
 	setupBluetoothService()
 	go runBluetoothService()
+	go runHealthCheck()
 	go checkForUpdates(Version, BuildVersion)
 	go runHttpService()
 	runAgent()
