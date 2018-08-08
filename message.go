@@ -64,3 +64,9 @@ func (d *MessageDecoder) Decode(b []byte) (Message, error) {
 	}
 	return out, nil
 }
+
+func BuildMessage(data map[string]interface{}) []byte {
+	data["time"] = time.Now().UnixNano() / 1000000
+	b, _ := msgpack.Marshal(data)
+	return b
+}

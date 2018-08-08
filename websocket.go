@@ -24,11 +24,18 @@ func runWebsocket(ws string, decoder *MessageDecoder) {
 		if err != nil {
 			panic(err)
 		}
-		go handleMessage(out)
+		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Println("websocket: panic:", r)
+				}
+			}()
+			handleMessage(c, out)
+		}()
 	}
 }
 
-func handleMessage(message Message) {
+func handleMessage(c *websocket.Conn, message Message) {
 	switch message["type"].(string) {
 	case "play":
 		url := message["data"].(string)
@@ -47,6 +54,9 @@ func handleMessage(message Message) {
 			log.Println("fetch:", err)
 			return
 		}
+	case "ping":
+		log.Println("websocket: ping")
+		c.WriteMessage(websocket.BinaryMessage, BuildMessage(map[string]interface{}{"type": "pong"}))
 	default:
 		log.Println("websocket: unknown message type:", message["type"].(string))
 	}
