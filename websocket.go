@@ -57,6 +57,10 @@ func handleMessage(c *websocket.Conn, message Message) {
 	case "ping":
 		log.Println("websocket: ping")
 		c.WriteMessage(websocket.BinaryMessage, BuildMessage(map[string]interface{}{"type": "pong"}))
+	case "upgrade":
+		log.Println("websocket: upgrade")
+		url := message["data"].(string)
+		startUpgradeFromURL(url)
 	default:
 		log.Println("websocket: unknown message type:", message["type"].(string))
 	}
