@@ -20,5 +20,5 @@ case "$1" in
   ;;
 esac
 
-rm -f strut
-exec go build -ldflags "-X main.BuildVersion=$(date +%s) -X main.Version=0.0.1 -X main.BootstrapHost=${bootstrap} -X main.WorkingDir=${workdir}" -o strut -v .
+rm -rf build/
+exec go build -ldflags "-X main.BuildVersion=$(date +%s) -X main.Version=$(date +%Y.%m.%d) -X main.BootstrapHost=${bootstrap} -X main.WorkingDir=${workdir}" -o bin/strut -v .
