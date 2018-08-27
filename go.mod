@@ -11,4 +11,5 @@ require (
 	github.com/pkg/errors v0.8.0 // indirect
 	github.com/raff/goble v0.0.0-20180208224917-efeac611681b // indirect
 	github.com/vmihailenco/msgpack v3.3.3+incompatible
+	golang.org/x/sys v0.0.0-20180824143301-4910a1d54f87 // indirect
 )
