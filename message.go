@@ -52,7 +52,7 @@ func (d *MessageDecoder) Decode(b []byte) (Message, error) {
 	encMessage := b[256:]
 	b64Message := make([]byte, encoding.EncodedLen(len(encMessage)))
 	encoding.Encode(b64Message, encMessage)
-	msg := fernet.VerifyAndDecrypt(b64Message, time.Minute, []*fernet.Key{key})
+	msg := fernet.VerifyAndDecrypt(b64Message, -1, []*fernet.Key{key})
 	if msg == nil {
 		return nil, errors.New("Could not decrypt message")
 	}
