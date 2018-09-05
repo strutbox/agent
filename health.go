@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net"
 	"net/url"
 	"time"
@@ -19,8 +20,9 @@ func runHealthCheck() {
 	failures := 0
 	maxFailures := 10
 	for range time.Tick(1 * time.Minute) {
-		conn, err := net.DialTimeout("tcp", url.Host, 5*time.Second)
+		conn, err := net.DialTimeout("tcp", address, 5*time.Second)
 		if err != nil {
+			log.Println("health:", err)
 			failures++
 			if failures > maxFailures {
 				handleHealthFailure()
